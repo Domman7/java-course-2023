@@ -3,7 +3,6 @@ package edu.hw1;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.Arrays;
-import java.util.Comparator;
 
 public final class Main {
     private final static Logger LOGGER = LogManager.getLogger();
@@ -13,6 +12,7 @@ public final class Main {
 
     public static void main(String[] args) {
         sayHello();
+        System.out.println(countK(5435));
     }
 
     //0. Привет, мир!
@@ -23,23 +23,38 @@ public final class Main {
     //1. Длина видео
     public static int minutesToSeconds(String videoLength) {
         var len = videoLength.split(":");
+        if (len.length != 2) {
+
+            return -1;
+        }
+
         int min = Integer.parseInt(len[0]);
         int sec = Integer.parseInt(len[1]);
 
-        return (sec >= 60 || sec < 0 || min < 0) ? -1 : min * 60 + sec;
+        if (sec >= 60 || sec < 0 || min < 0) {
+
+            return -1;
+        } else {
+
+            return min * 60 + sec;
+        }
     }
 
     //2. Количество цифр
     public static int countDigits(int number) {
-        if(number == 0) {
+        if (number == 0) {
 
             return 1;
         }
 
         int res = 0;
-        number = Math.abs(number);
+        if (number == Integer.MIN_VALUE) {
+            number = Integer.MAX_VALUE;
+        } else {
+            number = Math.absExact(number);
+        }
 
-        while(number > 0) {
+        while (number > 0) {
             res++;
             number /= 10;
         }
@@ -49,7 +64,7 @@ public final class Main {
 
     //3. Вложенный массив
     public static boolean isNestable(int[] first, int[] second) {
-        if(first.length == 0 || second.length == 0) {
+        if (first.length == 0 || second.length == 0) {
             return false;
         }
 
@@ -72,8 +87,8 @@ public final class Main {
 
     //5. Особый палиндром
     public static boolean isPalindromeDescendant(int number) {
-        while(number >= 10) {
-            if(isPalindrome(number)) {
+        while (number >= 10) {
+            if (isPalindrome(number)) {
 
                 return true;
             }
@@ -84,7 +99,7 @@ public final class Main {
     }
 
     public static int updateNumber(int number) {
-        StringBuilder res= new StringBuilder();
+        StringBuilder res = new StringBuilder();
         String numberStr = Integer.toString(number);
         int strLength = numberStr.length();
 
@@ -97,6 +112,7 @@ public final class Main {
 
         return Integer.parseInt(res.toString());
     }
+
     public static boolean isPalindrome(int number) {
         String numberStr = String.valueOf(number);
         int strLength = numberStr.length();
@@ -113,22 +129,28 @@ public final class Main {
 
     //6. Постоянная Капрекара
     public static int countK(int number) {
-        Integer[] numberAsc = numberToArray(number);
-        Integer[] numberDesc = numberToArray(number);
+        int[] numberAsc = numberToArray(number);
         Arrays.sort(numberAsc);
-        Arrays.sort(numberDesc, Comparator.reverseOrder());
+        int firstNumber = arrayToNumber(numberAsc, true);
+        int secondNumber = arrayToNumber(numberAsc, false);
 
-        if(number != 6174) {
-            return countK(arrayToNumber(numberDesc) - arrayToNumber(numberAsc)) + 1;
+        if (firstNumber - secondNumber == 0) {
+
+            return -1;
+        }
+
+        if (number != 6174) {
+
+            return countK(firstNumber - secondNumber) + 1;
         } else {
 
             return 0;
         }
     }
 
-    public static Integer[] numberToArray(int number) {
+    public static int[] numberToArray(int number) {
         int numberLength = String.valueOf(number).length();
-        Integer[] numberArray = new Integer[numberLength];
+        int[] numberArray = new int[numberLength];
 
         for (int i = 0; i < numberLength; i++) {
             numberArray[numberLength - i - 1] = number % 10;
@@ -138,18 +160,25 @@ public final class Main {
         return numberArray;
     }
 
-    public static int arrayToNumber(Integer[] array) {
+    public static int arrayToNumber(int[] array, boolean isReversed) {
         StringBuilder numberSb = new StringBuilder();
-        for (Integer num: array) {
-            numberSb.append(num);
+
+        for (int num : array) {
+            numberSb.append((char) (num + '0'));
         }
 
-        return Integer.parseInt(numberSb.toString());
+        if (isReversed) {
+
+            return Integer.parseInt(numberSb.reverse().toString());
+        } else {
+
+            return Integer.parseInt(numberSb.toString());
+        }
     }
 
     //7. Циклический битовый сдвиг
     public static int rotateRight(int n, int shift) {
-        if(shift < 0) {
+        if (shift < 0) {
 
             return rotateLeft(n, -shift);
         }
@@ -163,7 +192,7 @@ public final class Main {
     }
 
     public static int rotateLeft(int n, int shift) {
-        if(shift < 0) {
+        if (shift < 0) {
 
             return rotateRight(n, -shift);
         }
@@ -179,19 +208,23 @@ public final class Main {
         var rows = board.length;
         var columns = board[0].length;
         int[][] possibleMoves = {
-            {1, 2}, {2, 1},
-            {-1, 2}, {2, -1},
-            {1, -2}, {-2, 1},
-            {-1, -2}, {-2, -1}
+            {1, 2},
+            {2, 1},
+            {-1, 2},
+            {2, -1},
+            {1, -2},
+            {-2, 1},
+            {-1, -2},
+            {-2, -1}
         };
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                if(board[i][j] == 1) {
-                    for (int[] move: possibleMoves) {
+                if (board[i][j] == 1) {
+                    for (int[] move : possibleMoves) {
                         int row = i + move[0];
                         int column = j + move[1];
-                        if(isValid(row, column, rows, columns) && board[row][column] == 1) {
+                        if (isValid(row, column, rows, columns) && board[row][column] == 1) {
 
                             return false;
                         }

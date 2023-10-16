@@ -10,8 +10,8 @@ public class SampleTest {
     @DisplayName("1. Длина видео")
     @Test
     public void minutesToSecondsTest() {
-        String[] cases = new String[] {"01:00", "13:56", "10:60", "1:-1", "-1:1"};
-        int[] expected = new int[] {60, 836, -1, -1, -1};
+        String[] cases = new String[] {"01:00", "13:56", "10:60", "1:-1", "-1:1", "123"};
+        int[] expected = new int[] {60, 836, -1, -1, -1, -1};
 
         for (int i = 0; i < cases.length; i++) {
             assertEquals(expected[i], Main.minutesToSeconds(cases[i]));
@@ -21,8 +21,8 @@ public class SampleTest {
     @DisplayName("2. Количество цифр")
     @Test
     public void testCountDigits() {
-        int[] cases = new int[] {4666, 544, 0, -0, -1, -10};
-        int[] expected = new int[] {4, 3, 1, 1, 1, 2, 1};
+        int[] cases = new int[] {4666, 544, 0, -0, -1, -10, Integer.MIN_VALUE};
+        int[] expected = new int[] {4, 3, 1, 1, 1, 2, 10};
 
         for (int i = 0; i < cases.length; i++) {
             assertEquals(expected[i], Main.countDigits(cases[i]));
@@ -66,8 +66,8 @@ public class SampleTest {
     @DisplayName("6. Постоянная Капрекара")
     @Test
     public void testCountK() {
-        int[] cases = new int[] {3524, 6621, 6554, 1234};
-        int[] expected = new int[] {3, 5, 4, 3};
+        int[] cases = new int[] {3524, 6621, 6554, 1234, 1111};
+        int[] expected = new int[] {3, 5, 4, 3, -1};
 
         for(int i = 0; i < cases.length; i++){
             assertEquals(expected[i], Main.countK(cases[i]));
