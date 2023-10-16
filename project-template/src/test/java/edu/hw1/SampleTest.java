@@ -32,21 +32,21 @@ public class SampleTest {
     @DisplayName("3. Вложенный массив")
     @Test
     public void testIsNestable() {
-        assertTrue(Main.isNestable(new int[]{1, 2, 3, 4}, new int[]{0, 6}));
-        assertTrue(Main.isNestable(new int[] {3, 1}, new int[]{4, 0}));
-        assertFalse(Main.isNestable(new int[] {9, 9, 8}, new int[]{8, 9}));
-        assertFalse(Main.isNestable(new int[] {1, 2, 3, 4}, new int[]{2, 3}));
-        assertFalse(Main.isNestable(new int[] {}, new int[]{2, 3}));
-        assertFalse(Main.isNestable(new int[] {1, 2, 3, 4}, new int[]{}));
+        assertTrue(Main.isNestable(new int[] {1, 2, 3, 4}, new int[] {0, 6}));
+        assertTrue(Main.isNestable(new int[] {3, 1}, new int[] {4, 0}));
+        assertFalse(Main.isNestable(new int[] {9, 9, 8}, new int[] {8, 9}));
+        assertFalse(Main.isNestable(new int[] {1, 2, 3, 4}, new int[] {2, 3}));
+        assertFalse(Main.isNestable(new int[] {}, new int[] {2, 3}));
+        assertFalse(Main.isNestable(new int[] {1, 2, 3, 4}, new int[] {}));
     }
 
     @DisplayName("4. Сломанная строка")
     @Test
     public void testFixString() {
-        String[] cases = new String[]{"123456", "hTsii  s aimex dpus rtni.g", "badce", "a", ""};
-        String[] expected = new String[]{"214365", "This is a mixed up string.", "abcde", "a", ""};
+        String[] cases = new String[] {"123456", "hTsii  s aimex dpus rtni.g", "badce", "a", ""};
+        String[] expected = new String[] {"214365", "This is a mixed up string.", "abcde", "a", ""};
 
-        for(int i = 0; i < cases.length; i++){
+        for (int i = 0; i < cases.length; i++) {
             assertEquals(expected[i], Main.fixString(cases[i]));
         }
     }
@@ -58,7 +58,7 @@ public class SampleTest {
         boolean[] expected =
             new boolean[] {true, true, true, true, false, false, false, false};
 
-        for(int i = 0; i < cases.length; i++){
+        for (int i = 0; i < cases.length; i++) {
             assertEquals(expected[i], Main.isPalindromeDescendant(cases[i]));
         }
     }
@@ -69,7 +69,7 @@ public class SampleTest {
         int[] cases = new int[] {3524, 6621, 6554, 1234, 1111};
         int[] expected = new int[] {3, 5, 4, 3, -1};
 
-        for(int i = 0; i < cases.length; i++){
+        for (int i = 0; i < cases.length; i++) {
             assertEquals(expected[i], Main.countK(cases[i]));
         }
     }

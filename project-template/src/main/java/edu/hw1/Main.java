@@ -12,7 +12,6 @@ public final class Main {
 
     public static void main(String[] args) {
         sayHello();
-        System.out.println(countK(5435));
     }
 
     //0. Привет, мир!
@@ -23,6 +22,7 @@ public final class Main {
     //1. Длина видео
     public static int minutesToSeconds(String videoLength) {
         var len = videoLength.split(":");
+
         if (len.length != 2) {
 
             return -1;
@@ -48,6 +48,7 @@ public final class Main {
         }
 
         int res = 0;
+
         if (number == Integer.MIN_VALUE) {
             number = Integer.MAX_VALUE;
         } else {
@@ -65,6 +66,7 @@ public final class Main {
     //3. Вложенный массив
     public static boolean isNestable(int[] first, int[] second) {
         if (first.length == 0 || second.length == 0) {
+
             return false;
         }
 
