@@ -23,7 +23,7 @@ public class SampleTest {
         var negOne = new Expr.Negate(new Expr.Constant(1));
         var sumTwoFour = new Expr.Addition(two, four);
         var mult = new Expr.Multiplication(sumTwoFour, negOne);
-        var exp = new Expr.Exponent(mult, 2);
+        var exp = new Expr.Exponent(mult, new Expr.Constant(2));
         var res = new Expr.Addition(exp, new Expr.Constant(1));
         var expected = 37.0;
 

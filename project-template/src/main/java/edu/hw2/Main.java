@@ -4,7 +4,7 @@ import edu.hw2.task3.DefaultConnectionManager;
 import edu.hw2.task3.PopularCommandExecutor;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Throwable {
         PopularCommandExecutor executor = new PopularCommandExecutor(new DefaultConnectionManager(0.1), 5);
         executor.updatePackages();
     }
