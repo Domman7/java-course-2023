@@ -5,38 +5,35 @@ import java.util.Scanner;
 public class ConsoleInterface {
     public void run() {
         Scanner scanner = new Scanner(System.in);
-        Hangman session = new Hangman();
+        HangmanWordsBank wordsBank = new HangmanWordsBank(
+            new String[] {"hello", "aircraft", "array", "cafe", "sunrise"}
+        );
+        Hangman session = new Hangman(wordsBank.randomWord());
+        HangmanState state = null;
 
-        while (!session.isLose()) {
+        while (!(state instanceof HangmanState.Win || state instanceof HangmanState.Defeat)) {
             System.out.println("Guess a letter:");
             var input = scanner.nextLine();
 
-            if (input.length() == 1) {
-                if (session.isRightGuess(input.charAt(0))) {
-                    System.out.println("Hit!");
-                    System.out.println(session.getState());
-                } else {
-                    System.out.println("Missed, mistake " + session.getAttempts()
-                        + " out of " + session.getMaxAttempts() + " .");
-                }
-            }
-
             if (input.equals("exit")) {
-                System.out.println("You gave up!");
-                return;
-            }
-
-            if (session.isWin()) {
-                System.out.println("You win!");
-                return;
+                state = session.giveUp();
+                printState(state);
+                break;
+            } else if (input.length() == 1) {
+                state = tryGuess(session, input.charAt(0));
+                printState(state);
             }
         }
-
-        System.out.println("You lost!");
     }
 
-    private void printState(Hangman session) {
+    private static HangmanState tryGuess(Hangman session, char input) {
 
-        session.getState();
+        return session.guess(input);
+    }
+
+    private static void printState(HangmanState guess) {
+
+        System.out.println(guess.message());
     }
 }
+
