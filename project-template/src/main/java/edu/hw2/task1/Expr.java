@@ -17,10 +17,10 @@ public sealed interface Expr {
         }
     }
 
-    public record Exponent(Expr operand, int degree) implements Expr {
+    public record Exponent(Expr operand, Expr degree) implements Expr {
         @Override
         public double evaluate() {
-            return Math.pow(operand.evaluate(), degree);
+            return Math.pow(operand.evaluate(), degree.evaluate());
         }
     }
 
