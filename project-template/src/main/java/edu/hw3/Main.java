@@ -9,46 +9,40 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
     }
 
     //1. Шифр Атбаш
-    static final HashMap<Character, Character> CIPHER_TABLE = new HashMap<>() {{
-        put('A', 'Z');
-        put('B', 'Y');
-        put('C', 'X');
-        put('D', 'W');
-        put('E', 'V');
-        put('F', 'U');
-        put('G', 'T');
-        put('H', 'S');
-        put('I', 'R');
-        put('J', 'Q');
-        put('K', 'P');
-        put('L', 'O');
-        put('M', 'N');
-        put('N', 'M');
-        put('O', 'L');
-        put('P', 'K');
-        put('Q', 'J');
-        put('R', 'I');
-        put('S', 'H');
-        put('T', 'G');
-        put('U', 'F');
-        put('V', 'E');
-        put('W', 'D');
-        put('X', 'C');
-        put('Y', 'B');
-        put('Z', 'A');
-    }};
+    static final HashMap<Character, Character> CIPHER_TABLE = createCipherTable(createAlphabet('A', 'Z'));
+
+    private static String createAlphabet(char startChar, char endChar) {
+        StringBuilder sb = new StringBuilder();
+        for (char ch = startChar; ch <= endChar; ch++) {
+            sb.append(ch);
+        }
+        return sb.toString();
+    }
+
+    private static HashMap<Character, Character> createCipherTable(String alphabet) {
+        var res = new HashMap<Character, Character>();
+        var len = alphabet.length();
+
+        for (int i = 0; i < len; i++) {
+            res.put(alphabet.charAt(i), alphabet.charAt(len - i - 1));
+        }
+
+        return res;
+    }
 
     public static String atbash(String message) {
         if (message == null) {
@@ -166,10 +160,10 @@ public class Main {
     }
 
     //5. Список контактов
-    public static String[] parseContacts(String[] contacts, String mode) {
+    public static Person[] parseContacts(String[] contacts, String mode) {
         if (contacts == null || contacts.length == 0) {
 
-            return new String[0];
+            return new Person[0];
         }
 
         if (!mode.equals("ASC") && !mode.equals("DESC")) {
@@ -181,6 +175,7 @@ public class Main {
 
         for (var item : contacts) {
             var str = item.split(" ");
+
             if (str.length == 1) {
                 sortedContacts.add(new Person(str[0], null));
             } else if (str.length == 2) {
@@ -189,19 +184,21 @@ public class Main {
                 throw new IllegalArgumentException("Illegal argument");
             }
         }
+
         if (mode.equals("ASC")) {
-            Collections.sort(sortedContacts);
+            sortedContacts = sortedContacts.stream().sorted(Comparator.comparing(Person::getValue)).
+                collect(Collectors.toList());
         }
         if (mode.equals("DESC")) {
-            sortedContacts.sort(Collections.reverseOrder());
+            sortedContacts = sortedContacts.stream().sorted(Comparator.comparing(Person::getValue).reversed()).
+                collect(Collectors.toList());
         }
 
-        var res = new String[sortedContacts.size()];
-
-        for (int i = 0; i < sortedContacts.size(); i++) {
-            res[i] = sortedContacts.get(i).toString();
-        }
-
-        return res;
+        return sortedContacts.toArray(new Person[0]);
     }
+
+    //7. Дерево и null
+    static final Comparator<String> NULL_TOLERATE_COMPARATOR = Comparator.nullsFirst(
+        Comparator.comparingInt(String::length)
+    );
 }

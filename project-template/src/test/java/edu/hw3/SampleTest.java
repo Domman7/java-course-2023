@@ -1,6 +1,7 @@
 package edu.hw3;
 
 import edu.hw2.task1.Expr;
+import edu.hw3.task5.Person;
 import edu.hw3.task6.Market;
 import edu.hw3.task6.Stock;
 import edu.hw3.task7.NullTolerateComparator;
@@ -8,6 +9,7 @@ import edu.hw3.task8.BackwardIterator;
 import org.assertj.core.api.Assert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 import static edu.hw3.Main.atbash;
@@ -49,7 +51,7 @@ public class SampleTest {
 
     public static String ArrayToString(String[] array) {
 
-        return String.join(",", array);
+        return String.join(", ", array);
     }
 
     @DisplayName("3. Частота слов")
@@ -73,27 +75,39 @@ public class SampleTest {
     @DisplayName("5. Список контактов")
     @Test
     public void parseContactsTest() {
-        assertEquals(
-            ArrayToString(new String[] {"Thomas Aquinas", "Rene Descartes", "David Hume", "John Locke"}),
-            ArrayToString(parseContacts(
-                new String[] {"John Locke", "Thomas Aquinas", "David Hume", "Rene Descartes"},
-                "ASC"
-            ))
-        );
-        assertEquals(
-            ArrayToString(new String[] {"Carl Gauss", "Leonhard Euler", "Paul Erdos"}),
-            ArrayToString(parseContacts(
-                new String[] {"Paul Erdos", "Leonhard Euler", "Carl Gauss"},
-                "DESC"
-            ))
-        );
-        assertEquals(
-            ArrayToString(new String[] {"A", "B", "A D"}),
-            ArrayToString(parseContacts(
-                new String[] {"B", "A D", "A"},
-                "ASC"
-            ))
-        );
+        var expected = new Person[] {
+            new Person("Thomas", "Aquinas"),
+            new Person("Rene", "Descartes"),
+            new Person("David", "Hume"),
+            new Person("John", "Locke")
+        };
+        var input = new String[] {"John Locke", "Thomas Aquinas", "David Hume", "Rene Descartes"};
+        assertEquals(ArrayToString(expected), ArrayToString(parseContacts(input, "ASC")));
+
+        expected = new Person[] {
+            new Person("Carl", "Gauss"),
+            new Person("Leonhard", "Euler"),
+            new Person("Paul", "Erdos")
+        };
+        input = new String[] {"Paul Erdos", "Leonhard Euler", "Carl Gauss"};
+        assertEquals(ArrayToString(expected), ArrayToString(parseContacts(input, "DESC")));
+
+        expected = new Person[] {
+            new Person("A", null),
+            new Person("B", null),
+            new Person("A", "D")
+        };
+        input = new String[] {"B", "A D", "A"};
+        assertEquals(ArrayToString(expected), ArrayToString(parseContacts(input, "ASC")));
+    }
+
+    public static String ArrayToString(Person[] array) {
+        StringBuilder res = new StringBuilder();
+        for (var person : array) {
+            res.append(person.toString()).append(", ");
+        }
+
+        return res.toString();
     }
 
     @DisplayName("6. Биржа")

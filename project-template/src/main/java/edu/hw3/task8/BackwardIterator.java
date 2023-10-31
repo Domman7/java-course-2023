@@ -5,12 +5,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class BackwardIterator<T extends Collection<E>, E> implements Iterator<E> {
+public class BackwardIterator<E> implements Iterator<E> {
 
     private final Object[] collection;
     private int pos;
 
-    public BackwardIterator(T collection) {
+    public BackwardIterator(Collection<E> collection) {
         this.collection = collection.toArray();
         this.pos = collection.size() - 1;
     }

@@ -14,6 +14,15 @@ public class Person implements Comparable<Person> {
         this.lastName = lastName;
     }
 
+    public String getValue() {
+        if (lastName == null) {
+
+            return firstName;
+        }
+
+        return lastName;
+    }
+
     @Override
     public int compareTo(@NotNull Person o) {
         String first = this.lastName;
