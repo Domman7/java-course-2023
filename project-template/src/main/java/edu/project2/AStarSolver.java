@@ -26,10 +26,10 @@ public class AStarSolver implements Solver {
             throw new IllegalArgumentException("The start or end point is mounted on the wall");
         }
 
-        return getAStarPath(bfs(maze, start, end), start, end);
+        return getAStarPath(aStar(maze, start, end), start, end);
     }
 
-    private static Coordinate[][] bfs(Maze maze, Coordinate start, Coordinate end) {
+    private static Coordinate[][] aStar(Maze maze, Coordinate start, Coordinate end) {
         Queue<EuristicPair> queue = new PriorityQueue<>();
         queue.add(new EuristicPair(0, start));
         var grid = maze.getGrid();
