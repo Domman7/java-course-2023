@@ -103,15 +103,21 @@ public class Main {
 
         for (int i = 0; i < numThreads; i++) {
             executorService.submit(() -> {
+                int localCounter = 0;
+                int localCircleCounter = 0;
+
                 for (int j = 0; j < numSimulationsPerThread; j++) {
                     double x = ThreadLocalRandom.current().nextDouble();
                     double y = ThreadLocalRandom.current().nextDouble();
 
                     if (x * x + y * y <= 1) {
-                        circleCount.incrementAndGet();
+                        localCircleCounter++;
                     }
-                    totalCount.incrementAndGet();
+                    localCounter++;
                 }
+
+                circleCount.addAndGet(localCircleCounter);
+                totalCount.addAndGet(localCounter);
             });
         }
 
