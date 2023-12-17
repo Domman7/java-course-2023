@@ -1,18 +1,24 @@
 package edu.hw8.task2;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 public class FixedThreadPool implements ThreadPool {
     private final Thread[] pool;
+    private final int poolSize;
+    private final BlockingQueue<Runnable> taskQueue;
 
-    public FixedThreadPool(int threadCount) {
+    private FixedThreadPool(int poolSize) {
 
-        pool = new Thread[threadCount];
+        pool = new Thread[poolSize];
+        this.poolSize = poolSize;
+        taskQueue = new LinkedBlockingQueue<>();
     }
 
-    public static FixedThreadPool create(int threadCount) {
+    public static FixedThreadPool create(int poolSize) {
+        if (poolSize > 0) {
 
-        if (threadCount > 0) {
-
-            return new FixedThreadPool(threadCount);
+            return new FixedThreadPool(poolSize);
         } else {
 
             throw new IllegalArgumentException("Invalid thread count");
@@ -21,19 +27,29 @@ public class FixedThreadPool implements ThreadPool {
 
     @Override
     public void start() {
-        for (Thread thread : pool) {
-            if (thread != null) {
+        for (int i = 0; i < poolSize; i++) {
+            pool[i] = new Thread(() -> {
+                while (true) {
+                    try {
+                        Runnable task = taskQueue.take();
+                        task.run();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
+            });
 
-                thread.start();
-            }
+            pool[i].start();
         }
     }
 
     @Override
     public void execute(Runnable runnable) {
-        for (int i = 0; i < pool.length; i++) {
-
-            pool[i] = new Thread(runnable);
+        try {
+            taskQueue.put(runnable);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -41,7 +57,7 @@ public class FixedThreadPool implements ThreadPool {
     public void close() throws InterruptedException {
         for (Thread thread : pool) {
 
-            thread.join();
+            thread.interrupt();
         }
     }
 }

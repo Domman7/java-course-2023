@@ -1,9 +1,5 @@
 package edu.hw8.task3;
 
-import com.mifmif.common.regex.Generex;
-import com.mifmif.common.regex.util.Iterator;
-import edu.hw8.task2.FixedThreadPool;
-import edu.hw8.task2.ThreadPool;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -11,30 +7,41 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PasswordCracker {
-    private static final Map<String, String> ENCRYPTED_DATA = new HashMap<>();
-    private static Iterator iterator;
+    private final Map<String, String> encryptedData = new HashMap<>();
+    private final int alphabetSize;
+    private final Map<Integer, Character> charTable = new HashMap<>();
+    private final int[] passwordArray;
+    private final int passwordLength;
 
-    public PasswordCracker(String pattern) {
+    public PasswordCracker(String alphabet, int passwordLength) {
+        alphabetSize = alphabet.length();
+        passwordArray = new int[passwordLength];
+        this.passwordLength = passwordLength;
 
-        Generex generator = new Generex(pattern);
-        iterator = generator.iterator();
+        for (int i = 0; i < passwordLength; i++) {
+            passwordArray[i] = alphabetSize - 1;
+        }
+
+        for (int i = 0; i < alphabetSize; i++) {
+            charTable.put(i, alphabet.charAt(i));
+        }
     }
 
     public void put(String K, String V) {
 
-        ENCRYPTED_DATA.put(K, V);
+        encryptedData.put(K, V);
     }
 
     public Map<String, String> decrypt() {
         String password = nextPassword();
         var result = new HashMap<String, String>();
 
-        while (ENCRYPTED_DATA.size() != 0) {
+        while (encryptedData.size() != 0) {
             String hash = md5Hash(password);
 
-            if (ENCRYPTED_DATA.containsKey(hash)) {
-                result.put(ENCRYPTED_DATA.get(hash), password);
-                ENCRYPTED_DATA.remove(hash);
+            if (encryptedData.containsKey(hash)) {
+                result.put(encryptedData.get(hash), password);
+                encryptedData.remove(hash);
             }
 
             password = nextPassword();
@@ -43,13 +50,37 @@ public class PasswordCracker {
         return result;
     }
 
-    private static String nextPassword() {
-        if (iterator.hasNext()) {
+    private String nextPassword() {
+        if (decrement()) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < passwordLength; i++) {
+                sb.append(charTable.get(passwordArray[i]));
+            }
 
-            return iterator.next();
+            return sb.toString();
         } else {
 
             throw new RuntimeException("It is impossible to decrypt data");
+        }
+    }
+
+    private boolean decrement() {
+        int i = 0;
+
+        while (passwordArray[i] == 0) {
+            i++;
+        }
+
+        if (i != alphabetSize) {
+            passwordArray[i]--;
+            for (int j = 0; j < i; j++) {
+                passwordArray[j] = alphabetSize - 1;
+            }
+
+            return true;
+        } else {
+
+            return false;
         }
     }
 

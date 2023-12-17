@@ -1,66 +1,100 @@
 package edu.hw8.task3;
 
-import com.mifmif.common.regex.Generex;
-import com.mifmif.common.regex.util.Iterator;
-import edu.hw8.task2.FixedThreadPool;
-import edu.hw8.task2.ThreadPool;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class PasswordCrackerMultiThread {
-    private static final Map<String, String> ENCRYPTED_DATA = new HashMap<>();
-    private static Iterator iterator;
+    private final Map<String, String> encryptedData = new HashMap<>();
+    private final int alphabetSize;
+    private final Map<Integer, Character> chatTable = new HashMap<>();
+    private final int[] passwordArray;
+    private final int passwordLength;
 
-    public PasswordCrackerMultiThread(String pattern) {
+    public PasswordCrackerMultiThread(String alphabet, int passwordLength) {
+        alphabetSize = alphabet.length();
+        passwordArray = new int[passwordLength];
+        this.passwordLength = passwordLength;
 
-        Generex generator = new Generex(pattern);
-        iterator = generator.iterator();
+        for (int i = 0; i < passwordLength; i++) {
+            passwordArray[i] = alphabetSize - 1;
+        }
+
+        for (int i = 0; i < alphabetSize; i++) {
+            chatTable.put(i, alphabet.charAt(i));
+        }
     }
 
     public void put(String K, String V) {
 
-        ENCRYPTED_DATA.put(K, V);
+        encryptedData.put(K, V);
     }
 
     public Map<String, String> decryptMultiThread(int numThreads) {
         var result = new HashMap<String, String>();
 
-        try (FixedThreadPool pool = new FixedThreadPool(8)) {
-            pool.execute(() -> {
+        ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+
+        for (int i = 0; i < numThreads; i++) {
+            executorService.submit(() -> {
                 String password = nextPassword();
 
-                while (ENCRYPTED_DATA.size() != 0) {
+                while (encryptedData.size() != 0) {
                     String hash = md5Hash(password);
 
-                    if (ENCRYPTED_DATA.containsKey(hash)) {
-                        result.put(ENCRYPTED_DATA.get(hash), password);
-                        ENCRYPTED_DATA.remove(hash);
+                    if (encryptedData.containsKey(hash)) {
+                        result.put(encryptedData.get(hash), password);
+                        encryptedData.remove(hash);
                     }
 
                     password = nextPassword();
                 }
             });
+        }
 
-            pool.start();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        executorService.shutdown();
+
+        while (!executorService.isTerminated()) {
         }
 
         return result;
     }
 
-    private static synchronized String nextPassword() {
-        if (iterator.hasNext()) {
+    private synchronized String nextPassword() {
+        if (decrement()) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < passwordLength; i++) {
+                sb.append(chatTable.get(passwordArray[i]));
+            }
 
-            return iterator.next();
+            return sb.toString();
         } else {
 
             throw new RuntimeException("It is impossible to decrypt data");
+        }
+    }
+
+    private boolean decrement() {
+        int i = 0;
+
+        while (passwordArray[i] == 0) {
+            i++;
+        }
+
+        if (i != alphabetSize) {
+            passwordArray[i]--;
+            for (int j = 0; j < i; j++) {
+                passwordArray[j] = alphabetSize - 1;
+            }
+
+            return true;
+        } else {
+
+            return false;
         }
     }
 
