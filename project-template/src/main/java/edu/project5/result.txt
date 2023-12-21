@@ -1,0 +1,7 @@
+# Run complete. Total time: 00:16:57
+
+Benchmark                              Mode  Cnt   Score   Error  Units
+Project5.SampleTest.directAccess       avgt        0,840          ns/op
+Project5.SampleTest.lambdaMetafactory  avgt        1,118          ns/op
+Project5.SampleTest.methodHandle       avgt        8,165          ns/op
+Project5.SampleTest.reflection         avgt       10,658          ns/op
