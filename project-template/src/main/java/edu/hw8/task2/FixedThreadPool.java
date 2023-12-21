@@ -29,10 +29,14 @@ public class FixedThreadPool implements ThreadPool {
     public void start() {
         for (int i = 0; i < poolSize; i++) {
             pool[i] = new Thread(() -> {
-                while (true) {
+                while (!Thread.currentThread().isInterrupted()) {
                     try {
                         Runnable task = taskQueue.take();
-                        task.run();
+
+                        try {
+                            task.run();
+                        } catch (RuntimeException ignored) {
+                        }
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         break;
@@ -54,7 +58,7 @@ public class FixedThreadPool implements ThreadPool {
     }
 
     @Override
-    public void close() throws InterruptedException {
+    public void close() {
         for (Thread thread : pool) {
 
             thread.interrupt();
