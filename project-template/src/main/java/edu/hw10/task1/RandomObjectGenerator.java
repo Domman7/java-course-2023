@@ -85,15 +85,25 @@ public class RandomObjectGenerator {
     }
 
     private double generateDouble(Parameter parameter) {
-        var res = random.nextDouble();
+        var isMinAnnotation = parameter.isAnnotationPresent(Min.class);
+        var isMaxAnnotation = parameter.isAnnotationPresent(Max.class);
+        var minValue = parameter.getAnnotation(Min.class).value();
+        var maxValue = parameter.getAnnotation(Max.class).value();
+        double res;
 
-        if (parameter.isAnnotationPresent(Min.class)) {
+        if (isMinAnnotation && isMaxAnnotation) {
+            res = random.nextDouble(minValue, maxValue);
+        } else {
+            res = random.nextDouble();
 
-            res = Math.max(parameter.getAnnotation(Min.class).value(), res);
-        }
-        if (parameter.isAnnotationPresent(Max.class)) {
+            if (isMinAnnotation) {
 
-            res = Math.min(parameter.getAnnotation(Max.class).value(), res);
+                res = Math.max(minValue, res);
+            }
+            if (isMaxAnnotation) {
+
+                res = Math.min(maxValue, res);
+            }
         }
 
         return res;
